@@ -16,11 +16,7 @@ go build . || handle_error "Failed to build the Go application."
 
 chmod +x "$binary_name" || handle_error "Failed to set executable permissions."
 
-if [ ! -f "/usr/bin/$binary_name" ]; then
-    sudo cp -r "$binary_name" /usr/bin/ || handle_error "Failed to copy the binary to /usr/bin."
-else
-    echo "Binary already exists in /usr/bin. Skipping copy."
-fi
+sudo cp -r "$binary_name" /usr/bin/ || handle_error "Failed to copy the binary to /usr/bin."
 
 if [ ! -d "$cdir" ]; then
     mkdir -p "$cdir" || handle_error "Failed to create config directory."
