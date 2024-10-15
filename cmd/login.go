@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -19,8 +21,8 @@ const (
 )
 
 var (
-	clientID     = os.Getenv("CLIENT_ID")
-	clientSecret = os.Getenv("CLIENT_SECRET")
+	clientID     string
+	clientSecret string
 )
 
 var loginCmd = &cobra.Command{
@@ -45,10 +47,27 @@ type TokenResponse struct {
 	Scope       string `json:"scope"`
 }
 
+func init() {
+	err := godotenv.Load(GetConfigPath(".env"))
+	if err != nil {
+		logrus.Fatal("Error loading .env file")
+	}
+
+	logrus.Println("Loaded .env")
+	logrus.Println(os.Getenv("CLIENT_ID"))
+}
+
 func startDeviceFlow() {
+	clientID = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
+
+	if len(clientID) == 0 || len(clientSecret) == 0 {
+		logrus.Fatalln("Invalid clientID or client secret")
+	}
+
 	codeResponse, err := requestDeviceCode()
 	if err != nil {
-		fmt.Println("Error requesting device code:", err)
+		logrus.WithError(err).Warnln("Error requesting device code")
 		return
 	}
 
@@ -56,7 +75,7 @@ func startDeviceFlow() {
 
 	tokenResponse, err := pollForAccessToken(codeResponse.DeviceCode, codeResponse.Interval)
 	if err != nil {
-		fmt.Println("Error during token polling:", err)
+		logrus.WithError(err).Warnln("Error during token polling")
 		return
 	}
 
@@ -76,7 +95,7 @@ func requestDeviceCode() (*DeviceCodeResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Response body:", string(body))
+	// fmt.Println("Response body:", string(body))
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("received non-200 response: %s", string(body))
@@ -127,7 +146,8 @@ func pollForAccessToken(deviceCode string, interval int) (*TokenResponse, error)
 
 		values, err := url.ParseQuery(string(body))
 		if err != nil {
-			return nil, fmt.Errorf("error parsing token response: %s", string(body))
+			logrus.WithError(err).Warnln("Error parsing token response")
+			return nil, fmt.Errorf("error parsing token response: %v", err)
 		}
 
 		if accessToken := values.Get("access_token"); accessToken != "" {
@@ -138,13 +158,15 @@ func pollForAccessToken(deviceCode string, interval int) (*TokenResponse, error)
 			}, nil
 		}
 
-		return nil, fmt.Errorf("unexpected token response: %s", string(body))
+		logrus.WithError(err).Warnln("Error parsing token response")
+		return nil, fmt.Errorf("error parsing token response: %v", err)
 	}
 }
 
 func saveToken(token string) {
 	err := os.WriteFile(GetConfigPath(".token"), []byte(token), 0600)
 	if err != nil {
-		fmt.Println("Error saving token:", err)
+		logrus.WithError(err).Warnln("Error saving token")
+		return
 	}
 }
