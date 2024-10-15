@@ -1,62 +1,47 @@
-**Code Documentation**
+Imports
+--------
 
-### Main Section
+*   `stdio.h`: Standard input/output library for general-purpose I/O operations.
+*   `stdlib.h`: Standard library functions and macros providing various utilities, including memory management (malloc, realloc), process control (exit, sleep), and string manipulation (strlen, strncat).
+*   `math.h`: Mathematical functions and constants used in numerical computations.
+*   `malloc.h`: Function to dynamically allocate memory for a block of objects.
+*   `threads.h`: Library providing threads functionality.
 
-This code demonstrates a simple example of incrementing an integer variable using C.
+Functions
+--------
 
-### Imports
+### increment
 
-The following functions are imported:
+#### Parameters:
 
-* `stdio.h` for input/output operations
-* `stdlib.h` for general-purpose functions
-* `math.h` for mathematical functions (not used in this code)
-* `malloc.h` for dynamic memory allocation
-* `threads.h` for multithreading support (not used in this code)
-* `strings.h` for string manipulation
+*   `p`: Address of the integer variable to be incremented.
 
-### Constants and Macros
+Description:
+ Increments the value of an integer variable by 1.
 
-The following constants are defined:
+#### Returns: None (void)
 
-* `SIZE`: the size of an integer variable (10 bytes)
-* `MEOW`: a magic number (used as a constant)
+### main
 
-### Function Definitions
+#### Parameters:
 
-#### increment function
+*   `void`
 
- increments an integer variable by one.
+Description:
+A simple C program that demonstrates the usage of a function and basic data types.
 
-```markdown
-# Function: increment
-# Description: Increments an integer variable by one.
-# Parameters:
-# - p: Pointer to the integer variable to be incremented (default value is NULL)
-# Returns: None
-```
+#### Returns: int
 
-The `increment` function takes a single argument `p`, which is expected to be a pointer to an integer variable. The function simply increments the value pointed to by `p` and returns nothing.
+*   Returns the size of the `int` type in bytes.
+*   The value of an integer variable (`i`) after it is incremented by 1.
+*   The address of an integer pointer (`p`) pointing to the integer variable (`i`).
+*   The address of another integer pointer (`j`) pointing to the same integer variable (`i`).
 
-#### main function
+### increment
 
-The `main` function is the entry point of the program.
+#### Parameters:
 
-```markdown
-# Main Function: main
-# Description: The main function is the entry point of the program.
-# Returns: None
-```
+*   `int *`: Address of the integer variable to be incremented.
 
-The `main` function:
-
-1. Prints a message indicating that an integer variable uses 10 bytes of memory.
-2. Declares two integer variables `i` and `p`.
-3. Assigns the address of `i` to `p`.
-4. Prints the value of `i` and its address.
-5. Assigns a new value (20) to `i`.
-6. Prints the updated value of `i`.
-7. Declares two integer variables `j` and assigns it the address of `i`.
-8. Prints the updated values of `i` and `j`.
-9. Calls the `increment` function with `j` as argument.
-10. Prints the final value of `i`.
+Description:
+Increments the value of an integer variable by 1.

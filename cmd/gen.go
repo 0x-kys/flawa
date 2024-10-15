@@ -20,29 +20,40 @@ import (
 )
 
 var genCmd = &cobra.Command{
-	Use:   "gen <repo-name> [file] <ssh>",
-	Short: "Generate docs for codebase of a repo",
+	Use:   "gen <repo-name>",
+	Short: "Generate docs",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		domainChanged := cmd.Flags().Changed("domain")
+
 		repoName := args[0]
-		fileName := ""
-		useSSH := true
-		if len(args) > 1 {
-			fileName = args[1]
+		fileName, _ := cmd.Flags().GetString("file")
+		dirName, _ := cmd.Flags().GetString("dir")
+		useSSH, _ := cmd.Flags().GetBool("ssh")
+		domain, _ := cmd.Flags().GetString("domain")
+
+		if len(repoName) < 1 {
+			logrus.Fatalln("No repo name provided")
 		}
-		genDocs(repoName, fileName, useSSH)
+
+		if len(fileName) > 0 && len(dirName) > 0 {
+			logrus.Fatalln("Mention either a file (--file) or a directory (--dir)")
+		}
+
+		if !domainChanged && useSSH {
+			domain = "git@github.com"
+		}
+
+		genDocs(repoName, fileName, dirName, useSSH, domain)
 	},
 }
 
-func genDocs(repo string, file string, useSSH bool) {
-	fmt.Printf("Repository Name: %s\n", repo)
-	fmt.Printf("File: %s\n", file)
-
+func genDocs(repo string, file string, directory string, useSSH bool, domain string) {
 	if !isGitRepo() && !dirExists(repo) {
 		fmt.Println("Current directory is not a Git repository.")
 
 		fmt.Printf("Cloning repository '%s'...\n", repo)
-		err := cloneRepo(repo, useSSH)
+		err := cloneRepo(repo, useSSH, domain)
 		if err != nil {
 			fmt.Printf("Error cloning repository: %v\n", err)
 			return
@@ -61,9 +72,9 @@ func genDocs(repo string, file string, useSSH bool) {
 		return
 	}
 
-	if len(file) > 0 {
+	if len(directory) == 0 && len(file) > 0 {
 		if !fileExists(file) {
-			fmt.Printf("File '%s' does not exist in the repository.\n", file)
+			logrus.Fatalf("File '%s' does not exist in the repository.\n", file)
 			return
 		}
 
@@ -71,26 +82,23 @@ func genDocs(repo string, file string, useSSH bool) {
 
 		chunks, err := readFileChunks(file)
 		if err != nil {
-			fmt.Printf("Error reading file chunks: %v\n", err)
-			return
+			logrus.WithError(err).Fatalln("Error reading file chunks")
 		}
 
 		combinedContent := combinedChunks(chunks)
 
-		betterInstructions := "Your task is to generate write report of the code i share in markdown. Code that i'll share could be of any programming language. I want you to divide it into chunks and mention the main section of it (identifier most probably) and write a line mentioning what it does. For example: for `#include <stdio.h>` you need to mention a heading 'imports' and below that you can make a list of all the imports after that for functions you can mention function as heading and then function name, parameter with it's type and then in next line mention what that function does. Do not send anything other than the main content that is requested by the user. Only read the code and make a proper document style doc explaining code in the way i mentioned."
+		betterInstructions := "Your task is to generate a well-structured Markdown report for the code I provide, which may be written in any programming language. Analyze the code and identify key sections, such as imports, functions, classes, or constants. For imports, create a heading titled 'Imports' and list each import or library along with a brief note on its purpose if identifiable. For functions, use the function name as a subheading, list the parameters with their types, and provide a brief description of what the function does. For other sections like classes or constants, follow a similar pattern by using appropriate headings or subheadings and adding concise descriptions of their roles. Make sure the report is clean, readable, and properly formatted in Markdown. Only provide the requested content and avoid adding any additional commentary or text beyond the specified structure. Keep the documentation minimal."
 
 		response, err := sentToStudio(combinedContent, betterInstructions)
 		if err != nil {
-			fmt.Printf("Error generating documentation: %v\n", err)
+			logrus.WithError(err).Fatalln("Error generating documentation")
 			return
 		}
 
 		saveReadme(response)
+	} else if len(file) == 0 && len(directory) > 0 {
+		logrus.Warnln("THIS FEATURE IS WORK IN PROGRESS!!")
 	}
-
-	// WIP: if (file) { get functions store in chunks }
-	// TODO: if (repo) { fetch project info; fetch main source }
-	// WIP: generateDocs(content) -> storeTo("README.md")
 }
 
 func sentToStudio(content string, instructions string) (string, error) {
@@ -162,20 +170,15 @@ func isGitRepo() bool {
 	return !os.IsNotExist(err)
 }
 
-func cloneRepo(repo string, useSSH bool) error {
+func cloneRepo(repo string, useSSH bool, domain string) error {
 	user := fetchUsername()
 
 	var cloneURL string
 
-	if !useSSH {
-		cloneURL = fmt.Sprintf("https://github.com/%s/%s.git", user, repo)
+	if useSSH {
+		cloneURL = fmt.Sprintf("%s/%s/%s.git", domain, user, repo)
 	} else {
-		/**
-		* TODO: if this part is being executed
-		* - ask user for default (git@github.com)
-		* - ask user for custom (git@host)
-		 */
-		cloneURL = fmt.Sprintf("git@kys:%s/%s.git .", user, repo)
+		cloneURL = fmt.Sprintf("https://%s/%s/%s.git", domain, user, repo)
 	}
 
 	cmd := exec.Command("git", "clone", cloneURL)
