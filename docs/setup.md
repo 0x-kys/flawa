@@ -3,7 +3,16 @@
 ## LMStudio (w/ hugging-quants llama-3.2-1b-instruct)
 
 [**Download LM Studio**](https://lmstudio.ai/)
-![Model Setup](../imgs/lm-studio-model.png)
+![Model to download](../imgs/lm-studio-model.png)
+
+Once download is complete simply head over to developer section and frop top mid part load the model.
+
+After that you need to set same setting on left and start server
+
+![Load model and start server](../imgs/loadmodelandstartserver.png)
+
+> [!NOTE]
+> LM Studio will keep running in background.
 
 ## Github OAuth Application
 
