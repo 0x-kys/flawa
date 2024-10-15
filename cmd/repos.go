@@ -21,7 +21,7 @@ var reposCmd = &cobra.Command{
 }
 
 func fetchRepositories() {
-	token, err := os.ReadFile("token.txt")
+	token, err := os.ReadFile(GetConfigPath(".token"))
 	if err != nil {
 		log.Fatalf("Error reading token: %v", err)
 	}

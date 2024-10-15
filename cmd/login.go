@@ -143,7 +143,7 @@ func pollForAccessToken(deviceCode string, interval int) (*TokenResponse, error)
 }
 
 func saveToken(token string) {
-	err := os.WriteFile("token.txt", []byte(token), 0600)
+	err := os.WriteFile(GetConfigPath(".token"), []byte(token), 0600)
 	if err != nil {
 		fmt.Println("Error saving token:", err)
 	}

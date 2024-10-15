@@ -2,6 +2,12 @@
 
 A cli tool to interact with Github from terminal. This is something similar to gh-cli but customized to fit my workflow and improve my terminal experience.
 
+### Setup
+
+```sh
+# TODO
+```
+
 ### Usage
 
 ```txt

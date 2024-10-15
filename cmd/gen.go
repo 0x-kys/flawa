@@ -147,7 +147,7 @@ func combinedChunks(chunks []string) string {
 }
 
 func fetchUsername() string {
-	token, err := os.ReadFile("token.txt")
+	token, err := os.ReadFile(GetConfigPath(".token"))
 	if err != nil {
 		logrus.Fatalf("Error reading token: %v", err)
 	}

@@ -24,7 +24,7 @@ var infoCmd = &cobra.Command{
 }
 
 func fetchRepoInfo(repoName string) {
-	token, err := os.ReadFile("token.txt")
+	token, err := os.ReadFile(GetConfigPath(".token"))
 	if err != nil {
 		logrus.Fatalf("Error reading token: %v", err)
 	}
