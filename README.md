@@ -29,13 +29,4 @@ ALL I KNOW IS I'M YEETING GH AUTH AND LMSTUDIO
 
 Right now you can list your files using this lmao
 
----
-
-- [Setup](#setup)
-- [Usage](#usage)
-- [Features](#features)
-- [Flags](#flags)
-
----
-
 
