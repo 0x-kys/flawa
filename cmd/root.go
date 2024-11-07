@@ -19,15 +19,6 @@ func Execute() {
 }
 
 func init() {
-	// cmds
-	rootCmd.AddCommand(loginCmd)
-	rootCmd.AddCommand(reposCmd)
-	rootCmd.AddCommand(infoCmd)
-	rootCmd.AddCommand(genCmd)
-
-	// flags
-	genCmd.Flags().String("file", "", "Pass file path for document generation")
-	genCmd.Flags().String("dir", "", "Pass a directory to read files from it")
-	genCmd.Flags().String("domain", "github.com", "Use a different domain to clone your repo instead of default github.com")
-	genCmd.Flags().Bool("ssh", false, "Use github ssh for cloning")
+	rootCmd.AddCommand(listFilesCmd)
+	listFilesCmd.Flags().String("dir", ".", "Target directory path")
 }
