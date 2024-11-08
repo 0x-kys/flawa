@@ -2,9 +2,6 @@
 
 Generate docs for your code with ease
 
-> [!IMPORTANT]  
-> If you are struggling with setting up something you can open an issue or DM me directly [**@0x_syk**](https://x.com/0x_syk) on x dot com the everything app.
-
 ---
 
 - Install Golang
