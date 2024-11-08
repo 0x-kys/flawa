@@ -3,7 +3,7 @@
 Generate docs for your code with ease
 
 > [!IMPORTANT]  
-> This tool is very very alpha. If you are struggling with setting up something you can open an issue or DM me directly [**@0x_syk**](https://x.com/0x_syk) on x dot com the everything app.
+> If you are struggling with setting up something you can open an issue or DM me directly [**@0x_syk**](https://x.com/0x_syk) on x dot com the everything app.
 
 ---
 
@@ -44,4 +44,11 @@ flawa list <path/to/directory>
 
 flawa generate <path/to/directory>
 ```
+
+---
+
+TODO:
+
+- [ ] Save response to a document same as filename
+- [ ] Pass entire directory and read files one by one
 
