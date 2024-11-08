@@ -11,28 +11,37 @@ Generate docs for your code with ease
 - Install Ollama
 - `ollama pull llama3.2` and `ollama serve`
 
+```sh
+git clone https://github.com/0x-kys/flawa.git
+# OR
+git clone git@github.com:0x-kys/flawa.git
+
+cd flawa && chmod +x setup.sh && ./setup.sh
 ```
 
-```
-
----
-
-> [!IMPORTANT]
-> create a `~/.config/flawa/config.toml` and add 
-
-```toml
-[ignore]
-directories = [".git", "node_modules", "venv"]
-files = ["anyrandomfile"]
-
-[ollama]
-model = 'llama3.2'
-stream = false
-```
+### Usage:
 
 ```sh
-flawa list <path-to-directory>
+A command-line tool to generate docs from your code files
 
-flawa generate <path-to-file>
+Usage:
+  flawa [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  generate    Generate document of specific file
+  help        Help about any command
+  list        Get info of a specific repo by name
+
+Flags:
+  -h, --help   help for flawa
+
+Use "flawa [command] --help" for more information about a command.
+```
+
+```
+flawa list <path/to/directory>
+
+flawa generate <path/to/directory>
 ```
 
