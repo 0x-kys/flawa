@@ -15,10 +15,9 @@ type FlawaConfig struct {
 	} `toml:"ignore"`
 
 	Ollama struct {
-		Model   string `toml:"model"`
-		Stream  bool   `toml:"stream"`
-		NumGpu  int    `toml:"num-gpu"`
-		MainGpu int    `toml:"main-gpu"`
+		Model      string `toml:"model"`
+		Stream     bool   `toml:"stream"`
+		BasePrompt string `toml:"base_prompt"`
 	} `toml:"ollama"`
 }
 

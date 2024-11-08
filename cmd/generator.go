@@ -45,13 +45,9 @@ func generateDocument(filePath string) {
 
 	data := map[string]interface{}{
 		"model":      cfg.Config.Ollama.Model,
-		"prompt":     "Explain the following code and its working. Ignore all the extra stuff and just focus on explaining this code in parts as code snippet and then explanation. Here's the code: " + string(content),
+		"prompt":     cfg.Config.Ollama.BasePrompt + string(content),
 		"stream":     cfg.Config.Ollama.Stream,
-		"keep_alive": -1,
-		// "options": map[string]interface{}{
-		// 	"num_gpu":  cfg.Config.Ollama.NumGpu,
-		// 	"main_gpu": cfg.Config.Ollama.MainGpu,
-		// },
+		"keep_alive": 0,
 	}
 
 	jsonData, err := json.Marshal(data)
