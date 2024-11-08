@@ -13,7 +13,10 @@ git clone https://github.com/0x-kys/flawa.git
 # OR
 git clone git@github.com:0x-kys/flawa.git
 
-cd flawa && chmod +x setup.sh && ./setup.sh
+cd flawa && chmod +x setup.sh && ./setup.sh install
+
+# to uninstall
+./setup.sh uninstall
 ```
 
 ### Usage:
@@ -44,8 +47,5 @@ flawa generate <path/to/directory>
 
 ---
 
-TODO:
-
-- [ ] Save response to a document same as filename
-- [ ] Pass entire directory and read files one by one
+> Reminder to self: check todos on tiddly
 
