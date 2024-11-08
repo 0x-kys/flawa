@@ -20,5 +20,5 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(listFilesCmd)
-	listFilesCmd.Flags().String("dir", ".", "Target directory path")
+	rootCmd.AddCommand(generateDocumentCmd)
 }

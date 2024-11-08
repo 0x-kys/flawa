@@ -7,6 +7,16 @@ Generate docs for your code with ease
 
 ---
 
+- Install Golang
+- Install Ollama
+- `ollama pull llama3.2` and `ollama serve`
+
+```
+
+```
+
+---
+
 > [!IMPORTANT]
 > create a `~/.config/flawa/config.toml` and add 
 
@@ -14,19 +24,15 @@ Generate docs for your code with ease
 [ignore]
 directories = [".git", "node_modules", "venv"]
 files = ["anyrandomfile"]
+
+[ollama]
+model = 'llama3.2'
+stream = false
 ```
 
----
+```sh
+flawa list <path-to-directory>
 
-EVERYTHING IS PENDING IN THIS README
-
-ALL I KNOW IS I'M YEETING GH AUTH AND LMSTUDIO
-
-- USING OLLAMA (AUTO-START WITH SCRIPT) 
-- GENERATE DOCS IN A MORE HUMAN WAY
-
----
-
-Right now you can list your files using this lmao
-
+flawa generate <path-to-file>
+```
 

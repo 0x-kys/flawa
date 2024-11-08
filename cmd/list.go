@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"flawa/cfg"
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"os"
+	"path/filepath"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"os"
-	"path/filepath"
 )
 
 var listFilesCmd = &cobra.Command{
@@ -19,7 +20,7 @@ var listFilesCmd = &cobra.Command{
 	},
 }
 
-type Config struct {
+type ListConfig struct {
 	Ignore struct {
 		Directories []string `toml:"directories"`
 		Files       []string `toml:"files"`
@@ -52,25 +53,10 @@ func listFiles(arg string) {
 		os.Exit(1)
 	}
 
-	config, err := loadConfig()
-	if err != nil {
-		log.Error().Err(err).Msg("Failed to load config file")
-		os.Exit(1)
-	}
-
-	fmt.Printf("Directory tree for %s (ignoring %v directories and %v files)\n", dir, len(config.Ignore.Directories), len(config.Ignore.Files))
+	fmt.Printf("Directory tree for %s (ignoring %v directories and %v files)\n", dir, len(cfg.Config.Ignore.Directories), len(cfg.Config.Ignore.Files))
 	var totalFiles, totalDirs int
-	printTree(dir, "", &totalFiles, &totalDirs, config.Ignore.Directories, config.Ignore.Files)
+	printTree(dir, "", &totalFiles, &totalDirs, cfg.Config.Ignore.Directories, cfg.Config.Ignore.Files)
 	log.Info().Msgf("Done! Found %d files and %d directories\n", totalFiles, totalDirs)
-}
-
-func loadConfig() (Config, error) {
-	var config Config
-	configPath := filepath.Join(os.Getenv("HOME"), ".config", "flawa", "config.toml")
-	if _, err := toml.DecodeFile(configPath, &config); err != nil {
-		return config, err
-	}
-	return config, nil
 }
 
 func printTree(path, indent string, fileCount, dirCount *int, ignoreDirs, ignoreFiles []string) {

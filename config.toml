@@ -1,0 +1,8 @@
+[ignore]
+directories = [".git", "node_modules", "venv"]
+files = ["anyrandomfile"]
+
+[ollama]
+model = 'llama3.2'
+stream = false
+
