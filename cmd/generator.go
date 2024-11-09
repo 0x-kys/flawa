@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"flawa/cfg"
@@ -55,6 +57,8 @@ func generateDocument(filePath string) {
 		log.Fatal().Err(err).Msg("Failed to marshal JSON data")
 	}
 
+	fmt.Println("flawafying...")
+
 	start := time.Now()
 
 	resp, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewBuffer(jsonData))
@@ -77,12 +81,37 @@ func generateDocument(filePath string) {
 		log.Fatal().Err(err).Msg("Failed to parse Ollama API response")
 	}
 
-	if responseText, ok := response["response"].(string); ok {
-		fmt.Println("Ollama Response:", responseText)
+	var responseText string
+	if resText, ok := response["response"].(string); ok {
+		responseText = resText
 	} else {
-		fmt.Println("Ollama Response: unexpected format")
+		fmt.Println("Unexpected format")
+	}
+
+	defaultOutputDir := filepath.Dir(filePath)
+	fmt.Printf("Enter output directory (default: %s): ", defaultOutputDir)
+	var outputDir string
+	fmt.Scanln(&outputDir)
+	if outputDir == "" {
+		outputDir = defaultOutputDir
+	}
+
+	defaultOutputFile := fmt.Sprintf("%s-flawafied.md", strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath)))
+	fmt.Printf("Enter output filename (default: %s): ", defaultOutputFile)
+	var outputFile string
+	fmt.Scanln(&outputFile)
+	if outputFile == "" {
+		outputFile = defaultOutputFile
+	}
+
+	outputPath := filepath.Join(outputDir, outputFile)
+	if err := os.WriteFile(outputPath, []byte(responseText), 0644); err != nil {
+		log.Fatal().Err(err).Msg("Failed to save the output file")
+	} else {
+		fmt.Printf("Output saved to %s\n", outputPath)
 	}
 
 	elapsed := time.Since(start)
-	fmt.Printf("Request completed in %v\n", elapsed)
+	fmt.Printf("flawafied in %v\n", elapsed)
 }
+
