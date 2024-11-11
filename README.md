@@ -10,7 +10,7 @@ To get started, ensure you have **Golang** and **Ollama** installed, then set up
 2. **Install Ollama**: Follow instructions at [Ollama](https://ollama.com/download)
 3. **Pull and Serve Ollama**:
    ```bash
-   ollama pull llama3.2
+   ollama pull qwen2.5-coder # or llama3.2
    ollama serve
    ```
 
@@ -29,6 +29,19 @@ To get started, ensure you have **Golang** and **Ollama** installed, then set up
    ```
 
    > **To Uninstall**: Run `./setup.sh uninstall`
+
+## config.toml
+
+```toml
+[ignore]
+directories = [".git", "node_modules", "venv"] # Directories to ignore
+files = ["anyrandomfile"] # Files to ignore
+
+[ollama]
+model = "qwen2.5-coder" # Choose your preferred model ()
+stream = false # Keep this as false
+base_prompt = '''WORKS BEST WITH DEFAULT''' # Default base prompt for the model
+```
 
 ## Usage
 

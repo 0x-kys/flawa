@@ -3,7 +3,7 @@ directories = [".git", "node_modules", "venv"]
 files = ["anyrandomfile"]
 
 [ollama]
-model = 'llama3.2'
+model = 'qwen2.5-coder'
 stream = false
 base_prompt = '''Analyze and explain this code section by section:
 
