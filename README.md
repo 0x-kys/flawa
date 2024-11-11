@@ -1,4 +1,4 @@
-# Flawa
+<h1 align="center"> Flawa </h1>
 
 **Flawa** is a command-line tool designed to generate documentation from your code files, making it easier to understand and maintain projects. It comes with commands for listing files, generating documentation, and supporting autocompletion in various shells.
 
@@ -9,20 +9,21 @@ To get started, ensure you have **Golang** and **Ollama** installed, then set up
 1. **Install Golang**: [Golang installation guide](https://golang.org/doc/install)
 2. **Install Ollama**: Follow instructions at [Ollama](https://ollama.com/download)
 3. **Pull and Serve Ollama**:
-   ```bash
+   ```sh
    ollama pull qwen2.5-coder # or llama3.2
    ollama serve
    ```
 
 4. **Clone the Repository**:
-   ```bash
+   ```sh
    git clone https://github.com/0x-kys/flawa.git
    # OR
    git clone git@github.com:0x-kys/flawa.git
    ```
 
 5. **Run Setup**:
-   ```bash
+   ```sh
+   qwen2.5-coderh
    cd flawa
    chmod +x setup.sh
    ./setup.sh install
