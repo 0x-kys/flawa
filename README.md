@@ -1,4 +1,4 @@
-<h1 align="center"> Flawa </h1>
+# Flawa
 
 **Flawa** is a command-line tool designed to generate documentation from your code files, making it easier to understand and maintain projects. It comes with commands for listing files, generating documentation, and supporting autocompletion in various shells.
 
@@ -110,6 +110,8 @@ Feel free to submit issues or pull requests if you have ideas for improvements o
 ## To-Do
 
 - [ ] Complete the `generate -d` functionality to handle all files in a directory.
+- [ ] Add markdown reading support (charmbracelet/glamour)
+    - `flawa read path/to/flawafied-file.md`
 
 > **Note to Self**: Check todos on Tiddly.
 
