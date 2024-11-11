@@ -4,6 +4,7 @@ import (
 	"flawa/cfg"
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 
 	"github.com/rs/zerolog"
@@ -12,11 +13,23 @@ import (
 )
 
 var listFilesCmd = &cobra.Command{
-	Use:   "list",
-	Short: "Get info of a specific repo by name",
-	Args:  cobra.ExactArgs(1),
+	Use:   "list [directory]",
+	Short: "List files in the specified directory or current working directory if no directory is provided",
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		listFiles(args[0])
+		var directory string
+		if len(args) == 0 {
+			cwd, err := os.Getwd()
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to get current working directory")
+				return
+			}
+			directory = cwd
+		} else {
+			directory = args[0]
+		}
+
+		listFiles(directory)
 	},
 }
 
@@ -42,21 +55,66 @@ func listFiles(arg string) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	dir := arg
 
+	if dir == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get current working directory")
+			return
+		}
+		dir = cwd
+		relativeDir := "./" + filepath.Base(cwd)
+		fmt.Printf("Directory tree for %s (ignoring %v directories and %v files)\n", relativeDir, len(cfg.Config.Ignore.Directories), len(cfg.Config.Ignore.Files))
+	} else {
+		dir = expandHomePath(dir)
+		relativeDir := formatDirForDisplay(dir)
+		fmt.Printf("Directory tree for %s (ignoring %v directories and %v files)\n", relativeDir, len(cfg.Config.Ignore.Directories), len(cfg.Config.Ignore.Files))
+	}
+
 	checkDir, err := dirExists(dir)
 	if err != nil {
 		log.Error().Msgf("Error while looking for directory: %v", err)
 		os.Exit(1)
 	}
-
 	if !checkDir {
 		log.Warn().Msg("Directory doesn't exist")
 		os.Exit(1)
 	}
 
-	fmt.Printf("Directory tree for %s (ignoring %v directories and %v files)\n", dir, len(cfg.Config.Ignore.Directories), len(cfg.Config.Ignore.Files))
 	var totalFiles, totalDirs int
 	printTree(dir, "", &totalFiles, &totalDirs, cfg.Config.Ignore.Directories, cfg.Config.Ignore.Files)
 	log.Info().Msgf("Done! Found %d files and %d directories\n", totalFiles, totalDirs)
+}
+
+func expandHomePath(path string) string {
+	if path == "~" {
+		usr, err := user.Current()
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get current user")
+			return path
+		}
+		return usr.HomeDir
+	} else if len(path) > 1 && path[:2] == "~/" {
+		usr, err := user.Current()
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get current user")
+			return path
+		}
+		return filepath.Join(usr.HomeDir, path[2:])
+	}
+	return path
+}
+
+func formatDirForDisplay(dir string) string {
+	usr, err := user.Current()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get current user")
+		return dir
+	}
+	homeDir := usr.HomeDir
+	if len(dir) >= len(homeDir) && dir[:len(homeDir)] == homeDir {
+		return "~" + dir[len(homeDir):]
+	}
+	return dir
 }
 
 func printTree(path, indent string, fileCount, dirCount *int, ignoreDirs, ignoreFiles []string) {

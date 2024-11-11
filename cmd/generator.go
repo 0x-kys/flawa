@@ -17,13 +17,61 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	filePathFlag      string
+	directoryPathFlag string
+)
+
 var generateDocumentCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate document of specific file",
-	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		generateDocument(args[0])
+		if filePathFlag != "" {
+			generateDocument(parseInputPath(filePathFlag))
+		} else if directoryPathFlag != "" {
+			generateDocsFromDir(parseInputPath(directoryPathFlag))
+		} else {
+			fmt.Println("Specify either file (-f) or directory (-d)")
+			os.Exit(1)
+		}
 	},
+}
+
+func init() {
+	generateDocumentCmd.Flags().StringVarP(&filePathFlag, "file", "f", "", "Path to target file")
+	generateDocumentCmd.Flags().StringVarP(&directoryPathFlag, "dir", "d", "", "Path to target directory")
+}
+
+func parseInputPath(normPath string) string {
+	if normPath == "." {
+		pwd, err := os.Getwd()
+		if err != nil {
+			log.Fatal().Err(err)
+		}
+
+		return pwd
+	}
+
+	return normPath
+}
+
+func generateDocsFromDir(directory string) {
+	files := parseDirectory(directory)
+
+	for _, file := range files {
+		generateDocument(file)
+	}
+
+	log.Warn().Msg("This feature is under development")
+}
+
+func parseDirectory(directory string) []string {
+	var files []string
+
+	log.Info().Msg("Parsing" + " " + directory)
+	// TODO: parse directory and get all file names
+
+	return files
 }
 
 func generateDocument(filePath string) {
@@ -83,6 +131,8 @@ func generateDocument(filePath string) {
 
 	var responseText string
 	if resText, ok := response["response"].(string); ok {
+		elapsed := time.Since(start)
+		fmt.Printf("flawafied in %v\n", elapsed)
 		responseText = resText
 	} else {
 		fmt.Println("Unexpected format")
@@ -110,8 +160,4 @@ func generateDocument(filePath string) {
 	} else {
 		fmt.Printf("Output saved to %s\n", outputPath)
 	}
-
-	elapsed := time.Since(start)
-	fmt.Printf("flawafied in %v\n", elapsed)
 }
-

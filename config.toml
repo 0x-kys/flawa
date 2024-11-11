@@ -5,5 +5,32 @@ files = ["anyrandomfile"]
 [ollama]
 model = 'llama3.2'
 stream = false
-base_prompt = "Explain the following code and its working. Ignore all the extra stuff and just focus on explaining this code in parts as code snippet and then explanation. Here's the code:"
+base_prompt = '''Analyze and explain this code section by section:
 
+1. Core Overview:
+   - Main purpose of the code
+   - Programming language and key dependencies
+   - Architecture/design pattern (if applicable)
+
+2. Detailed Breakdown:
+   - Each major component's purpose and functionality
+   - Control flow and data flow
+   - Important functions, classes, or methods
+   - Key variables and data structures
+   - Any algorithms or complex logic
+
+3. Technical Implementation:
+   - Error handling patterns
+   - Important logic flows
+   - Performance considerations
+   - External integrations or API usage
+
+4. Code Quality Notes:
+   - Best practices followed/missed
+   - Potential optimizations
+   - Edge cases to consider
+
+If you have trouble processing the code, simply respond with: "Sorry I couldn't really process that one... give it another try?"
+
+Here's the code:
+'''
