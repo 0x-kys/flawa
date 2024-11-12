@@ -55,23 +55,114 @@ func parseInputPath(normPath string) string {
 	return normPath
 }
 
-func generateDocsFromDir(directory string) {
-	files := parseDirectory(directory)
-
-	for _, file := range files {
-		generateDocument(file)
-	}
-
-	log.Warn().Msg("This feature is under development")
-}
-
 func parseDirectory(directory string) []string {
 	var files []string
 
-	log.Info().Msg("Parsing" + " " + directory)
-	// TODO: parse directory and get all file names
+	log.Info().Msg("Parsing directory: " + directory)
+
+	err := filepath.Walk(directory, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			files = append(files, path)
+		}
+		return nil
+	})
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to parse directory")
+	}
 
 	return files
+}
+
+func generateDocsFromDir(directory string) {
+	files := parseDirectory(directory)
+
+	if len(files) == 0 {
+		log.Warn().Msg("No files found in directory")
+		return
+	}
+
+	defaultOutputDir := filepath.Join(directory, "flawafied_output")
+	fmt.Printf("Enter output directory for all files (default: %s): ", defaultOutputDir)
+	var outputDir string
+	fmt.Scanln(&outputDir)
+	if outputDir == "" {
+		outputDir = defaultOutputDir
+	}
+
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		log.Fatal().Err(err).Msg("Failed to create output directory")
+	}
+
+	for _, file := range files {
+		fmt.Printf("Generating output for %s\n", filepath.Base(file))
+		generateDocumentToFile(file, outputDir)
+	}
+
+	log.Info().Msg("Document generation completed for all files in directory.")
+}
+
+func generateDocumentToFile(filePath string, outputDir string) {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to read file content")
+		return
+	}
+
+	data := map[string]interface{}{
+		"model":      cfg.Config.Ollama.Model,
+		"prompt":     cfg.Config.Ollama.BasePrompt + string(content),
+		"stream":     cfg.Config.Ollama.Stream,
+		"keep_alive": 0,
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to marshal JSON data")
+		return
+	}
+
+	resp, err := http.Post("http://localhost:11434/api/generate", "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to send request to Ollama API")
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatal().Msgf("Ollama API returned an error: %s", resp.Status)
+		return
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to read Ollama API response")
+		return
+	}
+
+	var response map[string]interface{}
+	if err := json.Unmarshal(body, &response); err != nil {
+		log.Fatal().Err(err).Msg("Failed to parse Ollama API response")
+		return
+	}
+
+	var responseText string
+	if resText, ok := response["response"].(string); ok {
+		responseText = resText
+	} else {
+		fmt.Println("Unexpected format")
+		return
+	}
+
+	outputFile := fmt.Sprintf("%s-flawafied.md", strings.TrimSuffix(filepath.Base(filePath), filepath.Ext(filePath)))
+	outputPath := filepath.Join(outputDir, outputFile)
+	if err := os.WriteFile(outputPath, []byte(responseText), 0644); err != nil {
+		log.Fatal().Err(err).Msg("Failed to save the output file")
+	} else {
+		fmt.Printf("Output saved to %s\n", outputPath)
+	}
 }
 
 func generateDocument(filePath string) {

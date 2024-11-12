@@ -109,7 +109,7 @@ Feel free to submit issues or pull requests if you have ideas for improvements o
 
 ## To-Do
 
-- [ ] Complete the `generate -d` functionality to handle all files in a directory.
+- [ ] Refactor `cmd/generate.go` to use single function with conditionals
 - [ ] Add markdown reading support (charmbracelet/glamour)
     - `flawa read path/to/flawafied-file.md`
 
