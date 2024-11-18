@@ -109,8 +109,9 @@ Feel free to submit issues or pull requests if you have ideas for improvements o
 
 ## To-Do
 
-- [ ] Refactor `cmd/generate.go` to use single function with conditionals
-- [ ] Add markdown reading support (charmbracelet/glamour)
+- [ ] [TEST] Nested subdirectories for `-d`
+- [ ] [REDACTOR] `cmd/generate.go` to use single function with conditionals
+- [ ] [FEATURE] Add markdown reading support (charmbracelet/glamour)
     - `flawa read path/to/flawafied-file.md`
 
 > **Note to Self**: Check todos on Tiddly.
